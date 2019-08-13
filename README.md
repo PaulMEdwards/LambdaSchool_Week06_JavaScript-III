@@ -16,7 +16,7 @@ This challenge focuses on using the `this` keyword as well as getting comfortabl
 **Follow these steps for completing your project.**
 
 * [x] Submit a Pull-Request to merge `<firstName-lastName>` Branch into master (student's  Repo). **Please don't merge your own pull request**
-* [ ] Add your project manager as a reviewer on the pull-request
+* [x] Add your project manager as a reviewer on the pull-request
 * [ ] Your project manager will count the project as complete by merging the branch back into master.
 
 ## Assignments
@@ -30,7 +30,7 @@ This challenge focuses on using the `this` keyword as well as getting comfortabl
 
 Having a solid understanding of how `this` works will give you a huge advantage when you start building with more advanced frameworks.
 
-* [ ] Use the [this.js](assignments/this.js) file to traverse through a few `this` problems.
+* [x] Use the [this.js](assignments/this.js) file to traverse through a few `this` problems.
 
 ## Prototype
 
