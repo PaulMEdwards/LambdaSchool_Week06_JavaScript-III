@@ -39,23 +39,21 @@ GameObject.prototype.destroy = function() {
 function CharacterStats(attributes) {
   GameObject.call(this, attributes);
   this.healthPoints = attributes.healthPoints;
+  this.alignment = { LawVsChaos: 0, GoodVsEvil: 0 } | attributes.alignment;  // Default: Neutral
 }
 CharacterStats.prototype = Object.create(GameObject.prototype);
 CharacterStats.prototype.takeDamage = function(points=0) {
+  if (points === undefined) points = 0;
   this.healthPoints -= points;
-  if (points == 0) {
-    return `${this.name} took damage!`;
-  } else {
-    return `${this.name} took ${this.points} of damage!`;
-  }
+  // if (this.healthPoints <= 0) {
+  //   this.healthPoints = 0;
+  // }
+  return `${this.name} took ${points} points of damage!`;
 };
 CharacterStats.prototype.receiveHealth = function(points=0) {
+  if (points === undefined) points = 0;
   this.healthPoints += points;
-  if (points == 0) {
-    return `${this.name} received health`;
-  } else {
-    return `${this.name} received ${this.points} of health.`;
-  }
+  return `${this.name} received ${points} points of health.`;
 };
 
 /*
@@ -165,7 +163,115 @@ console.log('archer.greet():',archer.greet()); // Lilith offers a greeting in El
 console.log('mage.takeDamage():',mage.takeDamage()); // Bruce took damage.
 console.log('swordsman.destroy():',swordsman.destroy()); // Sir Mustachio was removed from the game.
 
+console.log("\n");  //Double blank line
+
 // Stretch task: 
-// * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
-// * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
+// * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.
+
+function MainCharacter(attributes) {
+  Humanoid.call(this, attributes);
+  this.defenses = attributes.defenses;
+}
+MainCharacter.prototype = Object.create(Humanoid.prototype);
+
+function Hero(attributes) {
+  MainCharacter.call(this, attributes);
+  this.alignment = { LawVsChaos: 1, GoodVsEvil: 1 };
+}
+Hero.prototype = Object.create(MainCharacter.prototype);
+
+function Villain(attributes) {
+  MainCharacter.call(this, attributes);
+  this.alignment = { LawVsChaos: -1, GoodVsEvil: -1 };
+}
+Villain.prototype = Object.create(MainCharacter.prototype);
+
+// * Give the Hero and Villain different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
+
+MainCharacter.prototype.attack = function(target,weapon) {
+  let p = random(weapon.min, weapon.max);
+  let buff = random(0,this.alignment.LawVsChaos*5) + random(0,this.alignment.GoodVsEvil*10);
+  p = p + buff;
+  console.log(`${this.name} attacks ${target.name} using ${weapon.name} for -${p} points (after ${buff} buff).`);
+  return p;
+};
+MainCharacter.prototype.defend = function(target,defense) {
+  let p = random(defense.min, defense.max);
+  let buff = random(0,this.alignment.LawVsChaos*10) + random(0,this.alignment.GoodVsEvil*5);
+  p = p + buff;
+  console.log(`${this.name} defends against ${target.name} using ${defense.name} for +${p} points (after ${buff} buff).`);
+  return p;
+};
+
 // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+const darthVader = new Villain({
+  createdAt: new Date(),
+  dimensions: {
+    length: 3,
+    width: 2,
+    height: 5,
+  },
+  healthPoints: 150,
+  name: 'Darth Vader',
+  team: 'Galactic Empire',
+  weapons: [
+    { name: 'Force Choke', min: 45, max: 60 },
+    { name: 'Light Saber', min: 50, max: 70}
+  ],
+  defenses: [
+    { name: 'Force Repel', min: 20, max: 35},
+    { name: 'Force Shield', min: 25, max: 40}
+  ],
+  language: 'Sith',
+});
+
+const lukeSkywalker = new Hero({
+  createdAt: new Date(),
+  dimensions: {
+    length: 2,
+    width: 1,
+    height: 4,
+  },
+  healthPoints: 115,
+  name: 'Luke Skywalker',
+  team: 'Rebel Alliance',
+  weapons: [
+    { name: 'Blaster Pistol', min: 20, max: 35},
+    { name: 'Light Saber', min: 25, max: 45}
+  ],
+  defenses: [
+    { name: 'Force Repel', min: 15, max: 30},
+    { name: 'Force Deflect', min: 30, max: 45}
+  ],
+  language: 'Jedi',
+});
+
+function logMainCharObj(obj) {
+  return `named ${obj.name} created at ${creationDateTime(obj)} with dimensions H:${obj.dimensions.height},W:${obj.dimensions.width},L:${obj.dimensions.length}, health:${obj.healthPoints}, weapons:${obj.weapons[0].name}+${obj.weapons[1].name} defenses:${obj.defenses[0].name}+${obj.defenses[1].name}, and is a member of the ${obj.team} who speaks ${obj.language}.`;
+}
+
+console.log(`Hero ${logMainCharObj(lukeSkywalker)}`);
+console.log(`Villain ${logMainCharObj(darthVader)}`);
+console.log('================================================');
+
+function random(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+while (lukeSkywalker.healthPoints > 0 && darthVader.healthPoints > 0) {
+  console.log(lukeSkywalker.takeDamage(darthVader.attack(lukeSkywalker, darthVader.weapons[random(0,1)])));
+  console.log(lukeSkywalker.receiveHealth(lukeSkywalker.defend(darthVader, lukeSkywalker.defenses[random(0,1)])));
+  console.log('------------------------------------------------');
+  console.log(darthVader.takeDamage(lukeSkywalker.attack(darthVader, lukeSkywalker.weapons[random(0,1)])));
+  console.log(darthVader.receiveHealth(darthVader.defend(lukeSkywalker, darthVader.defenses[random(0,1)])));
+  console.log('------------------------------------------------');
+  console.log(`lukeSkywalker.healthPoints:`,lukeSkywalker.healthPoints);
+  console.log(`darthVader.healthPoints:`,darthVader.healthPoints);
+  if (lukeSkywalker.healthPoints <= 0 || darthVader.healthPoints <= 0) console.log('------------------------------------------------');
+  if (lukeSkywalker.healthPoints<=0) console.log(lukeSkywalker.destroy());
+  if (darthVader.healthPoints<=0) console.log(darthVader.destroy());
+  console.log('================================================');
+}

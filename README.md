@@ -36,4 +36,4 @@ Having a solid understanding of how `this` works will give you a huge advantage 
 
 The prototype challenge will focus on building prototypes for a fantasy themed game that includes mages, swordsmen, and archers.
 
-* [ ] Follow the [prototypes.js](assignments/prototypes.js) instructions closely to create the beginnings of what could be an awesome JavaScript game.
+* [x] Follow the [prototypes.js](assignments/prototypes.js) instructions closely to create the beginnings of what could be an awesome JavaScript game.
